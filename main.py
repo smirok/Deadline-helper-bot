@@ -8,4 +8,5 @@ bot = Bot(token=API_TOKEN)
 dispatcher = Dispatcher(bot)
 
 if __name__ == '__main__':
-    executor.start_polling(dispatcher)
+    from handlers import dispatcher
+    executor.start_polling(dispatcher, skip_updates=True)

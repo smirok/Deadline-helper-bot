@@ -1,2 +1,1 @@
-from . import correct
-from . import incorrect
+from .correct import dispatcher

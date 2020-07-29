@@ -1,2 +1,2 @@
-from . import start
-from . import help
+from .help import dispatcher
+from .start import dispatcher
