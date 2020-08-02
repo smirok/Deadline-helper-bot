@@ -4,6 +4,7 @@ from enum import Enum
 
 from main import dispatcher
 from keyboards import *
+from database import Database, Query
 
 subjects_to_tasks = {
     'Haskell': haskell_tasks,
@@ -31,7 +32,7 @@ class QueryConstructor:
     type = None
     subject = None
     task = None
-    date = None
+    deadline = None
 
 
 @dispatcher.message_handler(commands=['add', 'del', 'upd'])
@@ -58,17 +59,26 @@ async def process_deadline_date(message: Message):
         await message.answer('Введите дату дедлайна в формате ДД.ММ.ГГГГ',
                              reply_markup=ReplyKeyboardRemove())
     else:
+        Database.delete(Query(QueryConstructor.subject,
+                              QueryConstructor.task))
         await message.answer(f'Дедлайн {QueryConstructor.task} '
                              f'по предмету {QueryConstructor.subject} '
                              f'удалён', reply_markup=ReplyKeyboardRemove())
 
 
-@dispatcher.message_handler(regexp='\d{2}.\d{2}.\d{4}')
+@dispatcher.message_handler(regexp='\d{2}.\d{2}.\d{4}')  # TO DO через точку
 async def process_last_input(message: Message):
-    QueryConstructor.date = message.text
-    await message.answer('Сделано')  # TO DO - разобрать случаи
+    QueryConstructor.deadline = str(message.text)
+    query = Query(QueryConstructor.subject,
+                  QueryConstructor.task,
+                  QueryConstructor.deadline)
+    if QueryConstructor.type == QueryTypes.ADD:
+        Database.add(query)
+    else:  # QueryTypes.UPD
+        Database.update(query)
+    await message.answer('Сделано')
 
 
-@dispatcher.message_handler(lambda message: message.text.startswith('/del'))
-async def process_deadline_me(message: Message):
-    print(message)
+@dispatcher.message_handler(commands=['show'])
+async def process_show_info(message: Message):
+    await message.answer(Database.show())
