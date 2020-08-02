@@ -1,54 +1,71 @@
 import sqlite3
-from typing import Optional
+from itertools import count
 
 
 class Query:
-    subject = ''
-    task = ''
-    date = ''
+    subject = None
+    task = None
+    deadline = None
 
-
-"""  DATE format : "HH:MM:DD:MM:YY"  """
+    def __init__(self, subject, task, deadline=None):
+        self.subject = subject
+        self.task = task
+        self.deadline = deadline
 
 
 class Database:
-    def __init__(self):
-        self.conn = sqlite3.connect("deadlines.db")  # ??? TO DO
-        self.cursor = self.conn.cursor()
+    conn = None
+    cursor = None
 
-        is_db_exists = self.cursor.fetchall()
-        if is_db_exists:
-            return
+    @classmethod
+    def init(cls):
+        cls.conn = sqlite3.connect("deadlines.db")  # ??? TO DO
+        cls.cursor = cls.conn.cursor()
 
-        self.cursor.execute("""CREATE TABLE deadlines
-                            (subject text, task text, date text)
+        cls.cursor.execute("""CREATE TABLE IF NOT EXISTS deadlines
+                            (subject TEXT, task TEXT, deadline TEXT)
                             """)
-        self.conn.commit()
+        cls.conn.commit()
 
-    def add(self, query: Query):
-        self.cursor.execute(f"""INSERT INTO deadlines (subject, task, date)
-                            VALUES ({query.subject},
-                            {query.task}, {query.date})
-                            """)
-        self.conn.commit()
+    @classmethod
+    def add(cls, query: Query):
+        cls.cursor.execute(f"""INSERT INTO deadlines """
+                           f"""VALUES ('{query.subject}',
+                           '{query.task}', '{query.deadline}')
+                           """)
+        cls.conn.commit()
 
-    def update(self, query: Query, updatable_task: Optional[str],
-               updatable_date: Optional[str]):
-        new_task = query.task if updatable_task is None else updatable_task
-        new_date = query.date if updatable_date is None else updatable_date
-
+    @classmethod
+    def update(cls, query: Query):
         database_query = f"""
         UPDATE deadlines
-        SET subject = query.subject and task = new_task and date = new_date
-        WHERE subject = query.subject and task = query.task
+        SET subject = '{query.subject}' AND task = '{query.task}'
+        AND deadline = '{query.deadline}'
+        WHERE subject = '{query.subject}' AND task = '{query.task}'
         """
-        self.cursor.execute(database_query)
-        self.conn.commit()
+        cls.cursor.execute(database_query)
+        cls.conn.commit()
 
-    def delete(self, query: Query):
+    @classmethod
+    def delete(cls, query: Query):
         database_query = f"""
         DELETE FROM deadlines WHERE
-        subject = query.subject and task = query.task and date = query.date
+        subject = '{query.subject}' AND task = '{query.task}'
         """
-        self.cursor.execute(database_query)
-        self.conn.commit()
+        cls.cursor.execute(database_query)
+        cls.conn.commit()
+
+    @classmethod
+    def show(cls) -> str:
+        cls.cursor.execute("SELECT * FROM deadlines")
+        message = ''
+        row_number = count(1)
+        while True:
+            row = cls.cursor.fetchone()
+
+            if row is None:
+                break
+
+            message += f'{next(row_number)}) {row[0]} {row[1]} {row[2]}\n'
+
+        return message
