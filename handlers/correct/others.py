@@ -66,12 +66,12 @@ async def process_deadline_date(message: Message):
                              f'удалён', reply_markup=ReplyKeyboardRemove())
 
 
-@dispatcher.message_handler(regexp='\d{2}.\d{2}.\d{4}')  # TO DO через точку
+@dispatcher.message_handler(regexp='\d{2}.\d{2}.\d{4}')
 async def process_last_input(message: Message):
     QueryConstructor.deadline = str(message.text)
     query = Query(QueryConstructor.subject,
                   QueryConstructor.task,
-                  QueryConstructor.deadline)
+                  '.'.join(reversed(QueryConstructor.deadline.split('.'))))
     if QueryConstructor.type == QueryTypes.ADD:
         Database.add(query)
     else:  # QueryTypes.UPD

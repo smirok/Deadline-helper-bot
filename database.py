@@ -56,7 +56,7 @@ class Database:
 
     @classmethod
     def show(cls) -> str:
-        cls.cursor.execute("SELECT * FROM deadlines")
+        cls.cursor.execute("SELECT * FROM deadlines ORDER BY deadline ASC")
         message = ''
         row_number = count(1)
         while True:
@@ -65,6 +65,9 @@ class Database:
             if row is None:
                 break
 
-            message += f'{next(row_number)}) {row[0]} {row[1]} {row[2]}\n'
+            message += f'{next(row_number)}) {row[0]}' \
+                       f' {row[1]} {".".join(reversed(row[2].split(".")))}\n'
 
+        if message == '':
+            return 'Дедлайнов нет :)'
         return message
