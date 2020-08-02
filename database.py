@@ -39,8 +39,7 @@ class Database:
     def update(cls, query: Query):
         database_query = f"""
         UPDATE deadlines
-        SET subject = '{query.subject}' AND task = '{query.task}'
-        AND deadline = '{query.deadline}'
+        SET deadline = '{query.deadline}'
         WHERE subject = '{query.subject}' AND task = '{query.task}'
         """
         cls.cursor.execute(database_query)
