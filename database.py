@@ -1,5 +1,4 @@
 import sqlite3
-from itertools import count
 
 
 class Query:
@@ -36,20 +35,18 @@ class Database:
         cls.conn.commit()
 
     @classmethod
-    def update(cls, query: Query):
-        database_query = f"""
-        UPDATE deadlines
-        SET deadline = '{query.deadline}'
-        WHERE subject = '{query.subject}' AND task = '{query.task}'
-        """
-        cls.cursor.execute(database_query)
-        cls.conn.commit()
+    def update(cls, query: Query, old_deadline: str):
+        old_query = Query(query.subject, query.task,
+                          '.'.join(reversed(old_deadline.split('.'))))
+        cls.delete(old_query)
+        cls.add(query)
 
     @classmethod
     def delete(cls, query: Query):
         database_query = f"""
         DELETE FROM deadlines WHERE
         subject = '{query.subject}' AND task = '{query.task}'
+        AND deadline = '{query.deadline}'
         """
         cls.cursor.execute(database_query)
         cls.conn.commit()
@@ -58,16 +55,12 @@ class Database:
     def show(cls) -> str:
         cls.cursor.execute("SELECT * FROM deadlines ORDER BY deadline ASC")
         message = ''
-        row_number = count(1)
         while True:
             row = cls.cursor.fetchone()
 
             if row is None:
                 break
 
-            message += f'{next(row_number)}) {row[0]}' \
-                       f' {row[1]} {".".join(reversed(row[2].split(".")))}\n'
+            message += f'{row[0]} {row[1]} {".".join(reversed(row[2].split(".")))}\n'
 
-        if message == '':
-            return 'Дедлайнов нет :)'
         return message
