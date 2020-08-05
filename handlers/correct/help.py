@@ -8,4 +8,5 @@ from main import dispatcher
 async def process_help(message: types.Message):
     await message.answer('/add - добавить новый дедлайн\n'
                          '/update - изменить существующий дедлайн\n'
-                         '/delete - удалить существующий дедлайн')
+                         '/delete - удалить существующий дедлайн\n'
+                         '/show - показать текущие дедлайны')
