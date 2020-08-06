@@ -22,14 +22,14 @@ class Database:
         cls.cursor = cls.conn.cursor()
 
         cls.cursor.execute("""CREATE TABLE IF NOT EXISTS deadlines
-                            (subject TEXT, task TEXT, deadline TEXT)
-                            """)
+                          (subject TEXT, task TEXT, deadline TEXT)
+                           """)
         cls.conn.commit()
 
     @classmethod
     def add(cls, query: Query):
-        cls.cursor.execute(f"""INSERT INTO deadlines """
-                           f"""VALUES ('{query.subject}',
+        cls.cursor.execute(f"""INSERT INTO deadlines
+                           VALUES ('{query.subject}',
                            '{query.task}', '{query.deadline}')
                            """)
         cls.conn.commit()
@@ -46,7 +46,7 @@ class Database:
         database_query = f"""
         DELETE FROM deadlines WHERE
         subject = '{query.subject}' AND task = '{query.task}'
-        AND deadline = '{query.deadline}'
+        AND deadline = '{query.deadline}' LIMIT 1
         """
         cls.cursor.execute(database_query)
         cls.conn.commit()
@@ -54,13 +54,14 @@ class Database:
     @classmethod
     def show(cls) -> str:
         cls.cursor.execute("SELECT * FROM deadlines ORDER BY deadline ASC")
-        message = ''
+        list_of_deadlines = []
         while True:
             row = cls.cursor.fetchone()
 
             if row is None:
                 break
 
-            message += f'{row[0]} {row[1]} {".".join(reversed(row[2].split(".")))}\n'
+            list_of_deadlines.append(f'{row[0]} {row[1]} '
+                                     f'{".".join(reversed(row[2].split(".")))}')
 
-        return message
+        return '\n'.join(list_of_deadlines)
