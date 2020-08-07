@@ -1,6 +1,6 @@
 from aiogram.types import Message, ReplyKeyboardRemove, ContentTypes
-from enum import Enum
 from aiogram.dispatcher import FSMContext
+from enum import Enum
 
 from main import dispatcher
 from keyboards import *
@@ -68,17 +68,17 @@ async def process_choose_task(message: Message, state: FSMContext):
         await message.answer('Введите дату дедлайна в формате ДД.ММ.ГГГГ',
                              reply_markup=ReplyKeyboardRemove())
         await StateMachine.waiting_for_new_date.set()
-    else:
-        query = Query(user_data['subject'],
-                      user_data['task'])
-        deadlines = select_query_deadlines(query)
+    else:  # DEL OR UPD
+        deadlines = Database.show(subject=user_data['subject'], task=user_data['task'])
         if not deadlines:
-            await message.answer(f'Изменять нечего :( \n'
-                                 f'Дедлайнов нет', reply_markup=ReplyKeyboardRemove())
+            await message.answer(f'По предмету {user_data["subject"]}, '
+                                 f'заданию {user_data["task"]} дедлайнов нет\n'
+                                 f'Попробуйте что-нибудь другое',
+                                 reply_markup=ReplyKeyboardRemove())
             await state.finish()
         else:
             await message.answer('Выберите дедлайн',
-                                 reply_markup=make_keyboard(select_query_deadlines(query)))
+                                 reply_markup=make_keyboard(deadlines))
             await StateMachine.waiting_for_old_record.set()
 
 
@@ -86,18 +86,24 @@ async def process_choose_task(message: Message, state: FSMContext):
                             content_types=ContentTypes.TEXT)
 async def process_choose_old_deadline(message: Message, state: FSMContext):
     user_data = await state.get_data()
-    query = Query(user_data['subject'],
-                  user_data['task'])
-    if message.text not in select_query_deadlines(query):
+
+    if message.text not in Database.show(subject=user_data['subject'],
+                                         task=user_data['task']):
         await message.reply('Выберите дедлайн, используя клавиатуру ниже')
-    await state.update_data(deadline=message.text[-10:])
+        return
+
+    deadline = message.text[-10:]
+    await state.update_data(deadline=deadline)
     user_data = await state.get_data()
-    query = Query(user_data['subject'],
-                  user_data['task'],
-                  '.'.join(reversed(user_data['deadline'].split('.'))))
+    query = Query(subject=user_data['subject'],
+                  task=user_data['task'],
+                  deadline='.'.join(reversed(user_data['deadline'].split('.'))))
     if user_data['type'] == QueryTypes.DEL:
         Database.delete(query)
-        await message.answer('Сделано', reply_markup=ReplyKeyboardRemove())
+        await message.answer(f'Дедлайн {user_data["task"]} '
+                             f'по предмету {user_data["subject"]} '
+                             f'от {user_data["deadline"]} был удален',
+                             reply_markup=ReplyKeyboardRemove())
         await state.finish()
     else:  # QueryTypes.UPD
         await message.answer('Введите дату дедлайна в формате ДД.ММ.ГГГГ',
@@ -115,23 +121,29 @@ async def process_choose_new_deadline(message: Message, state: FSMContext):
 
     await state.update_data(new_deadline=str(message.text))
     user_data = await state.get_data()
-    query = Query(user_data['subject'],
-                  user_data['task'],
-                  '.'.join(reversed(user_data['new_deadline'].split('.'))))
+    query = Query(subject=user_data['subject'],
+                  task=user_data['task'],
+                  deadline='.'.join(reversed(user_data['new_deadline'].split('.'))))
     if user_data['type'] == QueryTypes.ADD:
-        Database.add(query)  # если уже есть ?
+        Database.add(query)
+        await message.answer(f'Дедлайн {user_data["task"]} '
+                             f'по предмету {user_data["subject"]} '
+                             f'от {user_data["new_deadline"]} был добавлен')
     else:  # QueryTypes.UPD or DEL
         Database.update(query, user_data['deadline'])
+        await message.answer(f'Дедлайн {user_data["task"]} '
+                             f'по предмету {user_data["subject"]} '
+                             f'был перенесён с {user_data["deadline"]} '
+                             f'на {user_data["new_deadline"]}')
 
-    await message.answer('Сделано')
     await state.finish()
 
 
 @dispatcher.message_handler(commands=['show'])
 async def process_show_info(message: Message):
-    current_records = Database.show().split('\n')
+    current_records = Database.show(subject=None, task=None)
     answer_message = ['%i. %s' % (number + 1, record)
                       for number, record in enumerate(current_records)]
     if not answer_message:
         answer_message = ['Дедлайнов нет:)']
-    await message.answer('\n'.join(answer_message))
+    await message.answer('Текущие дедлайны:\n' + '\n'.join(answer_message))

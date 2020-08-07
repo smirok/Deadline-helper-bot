@@ -1,5 +1,4 @@
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
-from database import Database, Query
 from typing import List
 
 subjects = ReplyKeyboardMarkup(
@@ -81,23 +80,7 @@ minor_tasks = ReplyKeyboardMarkup(
 )
 
 
-def select_query_deadlines(query: Query) -> List[str]:
-    Database.cursor.execute("SELECT * FROM deadlines ORDER BY deadline ASC")
-    picked_deadlines = []
-    while True:
-        row = Database.cursor.fetchone()
-
-        if row is None:
-            break
-
-        if row[0] == query.subject and row[1] == query.task:
-            picked_deadlines.append(f' {row[0]} {row[1]}'
-                                    f' {".".join(reversed(row[2].split(".")))}\n')
-
-    return picked_deadlines
-
-
-def make_keyboard(picked_deadlines: List[str]):  # найти тип клавиатуры
+def make_keyboard(picked_deadlines: List[str]) -> ReplyKeyboardMarkup:
     markup = ReplyKeyboardMarkup(selective=True, resize_keyboard=True)
     for deadline in picked_deadlines:
         markup.add(f'{deadline}')
