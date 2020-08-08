@@ -1,0 +1,8 @@
+language: python
+python: "3.8.2"
+
+install:
+    - pip install -r requirements.txt
+scripts:
+    - find . -iname '*.py' | xargs flake8 --max-line-length=100 --show-source
+    - find . -iname '*.py' | xargs pylint --max-line-length=100 --disable=invalid-name,missing-docstring,global-statement,too-many-lines,R --enable=simplifiable-if-statement,redefined-variable-type
