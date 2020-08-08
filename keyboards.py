@@ -1,7 +1,7 @@
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 from typing import List
 
-subjects = ReplyKeyboardMarkup(
+subjects_kb = ReplyKeyboardMarkup(
     keyboard=[
         [
             KeyboardButton(text='Алгосы'),
@@ -19,7 +19,7 @@ subjects = ReplyKeyboardMarkup(
     resize_keyboard=True
 )
 
-algorithms_tasks = ReplyKeyboardMarkup(
+algorithms_tasks_kb = ReplyKeyboardMarkup(
     keyboard=[
         [
             KeyboardButton(text='Контест')
@@ -31,7 +31,7 @@ algorithms_tasks = ReplyKeyboardMarkup(
     resize_keyboard=True
 )
 
-haskell_tasks = ReplyKeyboardMarkup(
+haskell_tasks_kb = ReplyKeyboardMarkup(
     keyboard=[
         [
             KeyboardButton(text='???')
@@ -40,7 +40,7 @@ haskell_tasks = ReplyKeyboardMarkup(
     resize_keyboard=True
 )
 
-formal_languages_tasks = ReplyKeyboardMarkup(
+formal_languages_tasks_kb = ReplyKeyboardMarkup(
     keyboard=[
         [
             KeyboardButton(text='???')
@@ -49,7 +49,7 @@ formal_languages_tasks = ReplyKeyboardMarkup(
     resize_keyboard=True
 )
 
-calculus_tasks = ReplyKeyboardMarkup(
+calculus_tasks_kb = ReplyKeyboardMarkup(
     keyboard=[
         [
             KeyboardButton(text='ДЗ')
@@ -61,7 +61,7 @@ calculus_tasks = ReplyKeyboardMarkup(
     resize_keyboard=True
 )
 
-algebra_tasks = ReplyKeyboardMarkup(
+algebra_tasks_kb = ReplyKeyboardMarkup(
     keyboard=[
         [
             KeyboardButton(text='ДЗ')
@@ -70,7 +70,7 @@ algebra_tasks = ReplyKeyboardMarkup(
     resize_keyboard=True
 )
 
-minor_tasks = ReplyKeyboardMarkup(
+minor_tasks_kb = ReplyKeyboardMarkup(
     keyboard=[
         [
             KeyboardButton(text='???')

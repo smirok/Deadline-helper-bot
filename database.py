@@ -52,11 +52,11 @@ class Database:
     def delete(cls, query: Query):
         print(*query)
         database_query = f"""
-        DELETE 
-        FROM deadlines 
-        WHERE subject = '{query.subject}' 
+        DELETE
+        FROM deadlines
+        WHERE subject = '{query.subject}'
             AND task = '{query.task}'
-            AND deadline = '{query.deadline}' 
+            AND deadline = '{query.deadline}'
         LIMIT 1
         """
         cls.cursor.execute(database_query)
@@ -67,9 +67,9 @@ class Database:
         """If subject and task both are None : return all records from database
            Else matching by subject and task"""
         database_query = """
-        SELECT * 
-        FROM deadlines 
-        ORDER BY deadline 
+        SELECT *
+        FROM deadlines
+        ORDER BY deadline
         ASC
         """
         cls.cursor.execute(database_query)

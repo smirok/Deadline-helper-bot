@@ -3,17 +3,19 @@ from aiogram.dispatcher import FSMContext
 from enum import Enum
 
 from main import dispatcher
-from keyboards import *
+from keyboards import subjects_kb, haskell_tasks_kb, algorithms_tasks_kb, \
+    algebra_tasks_kb, formal_languages_tasks_kb, minor_tasks_kb, calculus_tasks_kb, \
+    make_keyboard
 from database import Database, Query
 from state_machine import StateMachine
 
 subjects_to_tasks = {
-    'Haskell': haskell_tasks,
-    'Алгосы': algorithms_tasks,
-    'Алгебра': algebra_tasks,
-    'Формальные языки': formal_languages_tasks,
-    'Майнор': minor_tasks,
-    'Матан': calculus_tasks
+    'Haskell': haskell_tasks_kb,
+    'Алгосы': algorithms_tasks_kb,
+    'Алгебра': algebra_tasks_kb,
+    'Формальные языки': formal_languages_tasks_kb,
+    'Майнор': minor_tasks_kb,
+    'Матан': calculus_tasks_kb
 }
 
 tasks = set()
@@ -37,7 +39,7 @@ async def process_choose_type(message: Message, state: FSMContext):
         '/del': QueryTypes.DEL
     }.get(message.text, 0)
     await state.update_data(type=query_type)
-    await message.answer('Выберите предмет', reply_markup=subjects)
+    await message.answer('Выберите предмет', reply_markup=subjects_kb)
     await StateMachine.waiting_for_subject.set()
 
 
@@ -114,7 +116,7 @@ async def process_choose_old_deadline(message: Message, state: FSMContext):
 @dispatcher.message_handler(state=StateMachine.waiting_for_new_date)
 async def process_choose_new_deadline(message: Message, state: FSMContext):
     from re import match
-    if match('\d{2}.\d{2}.\d{4}', message.text) is None:
+    if match('\\d{2}.\\d{2}.\\d{4}', message.text) is None:
         await message.reply('Дата не соотвествует формату\n'
                             'Введите дату в формате ДД.ММ.ГГГГ')
         return
