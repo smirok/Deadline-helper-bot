@@ -1,3 +1,7 @@
-from .others import dispatcher
+from aiogram import Dispatcher
 
-__all__ = ['dispatcher']
+from .others import process_any_message
+
+
+def setup(dispatcher: Dispatcher):
+    dispatcher.register_message_handler(process_any_message)

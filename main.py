@@ -1,8 +1,8 @@
 from aiogram import Bot
 from aiogram.dispatcher import Dispatcher
 from aiogram.utils import executor
-from database import Database
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
+from database import Database
 
 from cfg import API_TOKEN
 
@@ -10,8 +10,13 @@ bot = Bot(token=API_TOKEN)
 storage = MemoryStorage()
 dispatcher = Dispatcher(bot, storage=storage)
 
-if __name__ == '__main__':
-    from handlers import dispatcher
 
+def on_startup(dp: Dispatcher):
+    import handlers
+    handlers.correct.setup(dp)
+    handlers.incorrect.setup(dp)
+
+
+if __name__ == '__main__':
     Database.init()
-    executor.start_polling(dispatcher, skip_updates=True)
+    executor.start_polling(dispatcher, skip_updates=True, on_startup=on_startup(dispatcher))

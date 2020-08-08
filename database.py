@@ -50,7 +50,6 @@ class Database:
 
     @classmethod
     def delete(cls, query: Query):
-        print(*query)
         database_query = f"""
         DELETE
         FROM deadlines

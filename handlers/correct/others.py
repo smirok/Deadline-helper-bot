@@ -1,6 +1,7 @@
+from enum import Enum
+from re import match
 from aiogram.types import Message, ReplyKeyboardRemove, ContentTypes
 from aiogram.dispatcher import FSMContext
-from enum import Enum
 
 from main import dispatcher
 from keyboards import subjects_kb, haskell_tasks_kb, algorithms_tasks_kb, \
@@ -115,7 +116,6 @@ async def process_choose_old_deadline(message: Message, state: FSMContext):
 
 @dispatcher.message_handler(state=StateMachine.waiting_for_new_date)
 async def process_choose_new_deadline(message: Message, state: FSMContext):
-    from re import match
     if match('\\d{2}.\\d{2}.\\d{4}', message.text) is None:
         await message.reply('Дата не соотвествует формату\n'
                             'Введите дату в формате ДД.ММ.ГГГГ')
