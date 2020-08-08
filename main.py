@@ -3,6 +3,7 @@ from aiogram.dispatcher import Dispatcher
 from aiogram.utils import executor
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from database import Database
+import handlers
 
 from cfg import API_TOKEN
 
@@ -12,7 +13,6 @@ dispatcher = Dispatcher(bot, storage=storage)
 
 
 def on_startup(dp: Dispatcher):
-    import handlers
     handlers.correct.setup(dp)
     handlers.incorrect.setup(dp)
 
