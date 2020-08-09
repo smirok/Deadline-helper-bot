@@ -63,8 +63,10 @@ class Database:
 
     @classmethod
     def show(cls, subject: Optional[str], task: Optional[str]) -> List[str]:
-        """If subject and task both are None : return all records from database
-           Else matching by subject and task"""
+        """
+        If subject and task both are None : return all records from database
+        Else matching by subject and task
+        """
         database_query = """
         SELECT *
         FROM deadlines
