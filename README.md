@@ -12,6 +12,8 @@ Simple telegram bot with database to control my deadlines
 -   Install [Python](https://www.python.org/downloads/) latest version 
 -   Clone repository: `git clone https://github.com/smirok/Deadline-helper-bot`
 -   Install dependencies: `pip install -r requirements.txt`
+
+## Run
 -   Insert bot token in `cfg.py`
 -   Run `python main.py`
 
