@@ -6,7 +6,7 @@
 </div>
 
 ## Description
-Simple telegram bot with database to control my deadlines
+Simple telegram bot with database to control deadlines
 
 ## Install
 -   Install [Python](https://www.python.org/downloads/) latest version 
@@ -22,3 +22,5 @@ Simple telegram bot with database to control my deadlines
 -   `del` - delete an existing deadline
 -   `upd` - update the date of an existing deadline
 -   `show` - show list of current deadlines sorted by date
+
+Application saves information about deadlines to a local database `deadlines.db`
